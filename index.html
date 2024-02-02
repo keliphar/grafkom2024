@@ -3,9 +3,58 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>DDA Line Drawing</title>
+    <style>
+        canvas {
+            border: 1px solid #000;
+        }
+    </style>
 </head>
 <body>
-    Halo
+    <canvas id="lineCanvas" width="512" height="512"></canvas>
+
+    <script>
+        const canvas = document.getElementById('lineCanvas');
+        const context = canvas.getContext('2d');
+
+        let startPoint = null;
+
+        function drawDDALine(x1, y1, x2, y2) {
+            const dx = x2 - x1;
+            const dy = y2 - y1;
+            const steps = Math.max(Math.abs(dx), Math.abs(dy));
+
+            const xIncrement = dx / steps;
+            const yIncrement = dy / steps;
+
+            let x = x1;
+            let y = y1;
+
+            context.beginPath();
+            context.moveTo(x1, y1);
+
+            for (let i = 1; i <= steps; i++) {
+                x += xIncrement;
+                y += yIncrement;
+                context.lineTo(Math.round(x), Math.round(y));
+            }
+
+            context.stroke();
+        }
+
+        canvas.addEventListener('mousedown', function(event) {
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = event.clientX - rect.left;
+            const mouseY = event.clientY - rect.top;
+
+            if (!startPoint) {
+                startPoint = { x: mouseX, y: mouseY };
+            } else {
+                const endPoint = { x: mouseX, y: mouseY };
+                drawDDALine(startPoint.x, startPoint.y, endPoint.x, endPoint.y);
+                startPoint = null;
+            }
+        });
+    </script>
 </body>
 </html>
